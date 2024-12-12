@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Bar Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <script>
+    // 1. Data
+    const data = [10, 15, 20, 25, 30, 35];
+
+    // 2. SVG Canvas
+    const width = 500, height = 300, barPadding = 5;
+    const svg = d3.select("body")
+                  .append("svg")
+                  .attr("width", width)
+                  .attr("height", height);
+
+    // 3. Scales
+    const xScale = d3.scaleBand()
+                     .domain(data.map((d, i) => i))
+                     .range([0, width])
+                     .padding(0.1);
+
+    const yScale = d3.scaleLinear()
+                     .domain([0, d3.max(data)])
+                     .range([height, 0]);
+
+    // 4. Bars
+    svg.selectAll("rect")
+       .data(data)
+       .enter()
+       .append("rect")
+       .attr("x", (d, i) => xScale(i))
+       .attr("y", d => yScale(d))
+       .attr("width", xScale.bandwidth())
+       .attr("height", d => height - yScale(d))
+       .attr("fill", "steelblue")
+       .on("mouseover", function (event, d) {
+         d3.select(this).attr("fill", "orange");
+       })
+       .on("mouseout", function (event, d) {
+         d3.select(this).attr("fill", "steelblue");
+       });
+
+    // 5. Axes
+    svg.append("g")
+       .attr("transform", `translate(0, ${height})`)
+       .call(d3.axisBottom(xScale).tickFormat(d => d + 1));
+
+    svg.append("g")
+       .call(d3.axisLeft(yScale));
+  </script>
+</body>
+</html>
